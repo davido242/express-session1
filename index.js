@@ -12,47 +12,16 @@ app.use(session({
   saveUninitialized: false
 }))
 
-app.use((req, res, next) => {
-  console.log(`${req.method} - ${req.url}`);
-  next();
-})
-
-const users = [
-  {name: "Anson", age: 22},
-  {name: "Michelle", age: 23},
-  {name: "Kelvin", age: 25}
-]
-
-const posts = [
-  {title: "My Favourite Food"},
-  {title: "My Favourite Games"}
-]
+// let viewCount = 0;
 
 app.get("/", (req, res) => {
-  res.send({
-    message: "thanks",
-    user: { }
-  })
-  console.log(users);
-
-})
-
-app.get("/users", (req, res) => {
-  res.status(200).send(users);
-  console.log(res.statusCode);
-})
-
-app.post("/users", (req, res) => {
-  const user = req.body
-  users.push(user);
-  res.send("Created User Now");
-})
-
-app.post("/login", (req, res) => {
-  const { username, password } = req.body
-  console.log(req.sessionID);
-  res.send(req.sessionID);
-  console.log(username, password);
+// res.send(`${req.method} - ${req.url}`);
+if(!req.session.viewCount) {
+  req.session.viewCount = 1;
+} else {
+  req.session.viewCount += 1;
+}
+res.send(`You have visited this page: ${req.session.viewCount}`)
 })
 
 app.listen(3003, () => {
