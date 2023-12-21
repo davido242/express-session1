@@ -2,9 +2,20 @@ const express = require("express");
 const session = require("express-session");
 const app = express();
 const multer = require("multer");
+const path = require("path");
 
-const upload = multer();
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'images')
+//   },
+//   filename: (req, file, cb) => {
+//     console.log(file);
+//     cb(null, Date.now()+ path.extname(file.originalname));
+//   }
+// })
+// const upload = multer({storage: storage});
 
+const upload = multer()
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -34,10 +45,12 @@ app.get('/upload', (req, res) => {
 })
 
 app.post('/upload', upload.single('uploadImage'), (req, res) => {
-  res.send("Image Uploaded");
-  image = req.file;
+  const name = req.body.username;
+  const image = req.file;
   console.log("Image Uploaded");
   console.log(image);
+  res.contentType('image/jpeg').send(image.buffer);
+  console.log(name);
 });
 
 app.listen(3003, () => {
