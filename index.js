@@ -1,6 +1,9 @@
 const express = require("express");
 const session = require("express-session");
 const app = express();
+const multer = require("multer");
+
+const upload = multer();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -16,7 +19,6 @@ app.use(
   })
 );
 
-// let viewCount = 0;
 
 app.get("/", (req, res) => {
   if (!req.session.viewCount) {
@@ -31,8 +33,11 @@ app.get('/upload', (req, res) => {
   res.render("upload");
 })
 
-app.post('/uploaded', (req, res) => {
+app.post('/upload', upload.single('uploadImage'), (req, res) => {
   res.send("Image Uploaded");
+  image = req.file;
+  console.log("Image Uploaded");
+  console.log(image);
 });
 
 app.listen(3003, () => {
