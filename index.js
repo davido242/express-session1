@@ -17,9 +17,6 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// The reason for the error of unexpected end of form
-app.use(upload.any());
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
