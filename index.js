@@ -2,26 +2,24 @@ const express = require("express");
 const session = require("express-session");
 const app = express();
 const multer = require("multer");
-const path = require("path");
-// const cors = require("cors");
+// const path = require("path");
+
 
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, './images')
 //   },
 //   filename: (req, file, cb) => {
-//     console.log(file);
+//     // console.log(file);
 //     cb(null, Date.now() + "davido" + path.extname(file.originalname));
 //   }
 // })
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-// app.use(upload.any());
-// app.use(cors());
 
-// const bodyParser = require("body-parser");
-// app.use(bodyParser.json());
-// const upload = multer()
+// The reason for the error of unexpected end of form
+app.use(upload.any());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -35,6 +33,11 @@ app.use(
     saveUninitialized: false,
   })
 );
+
+const Auth = (req, res, next) => {
+  console.log("Auth Loaded");
+  next();
+}
 
 app.get("/", (req, res) => {
   if (!req.session.viewCount) {
@@ -50,34 +53,22 @@ app.get("/upload", (req, res) => {
 });
 
 app.post("/upload", upload.single("uploadImage"), (req, res) => {
-  // const {username, password, email} = req.body;
-
-  const image = req.file.buffer;
-  // console.log(image);
+  const {username, password, email} = req.body;
+  const image = req.file;
   console.log({ "name: ": username, email: email, password: password });
-  // res.contentType('image/jpeg').send(image.buffer);
   res.contentType("image/jpeg").send(image);
-  // res.send("THanks")
   console.log("Image", image);
-  // console.log("Image Path: ", image.path);
 });
 
-app.post("/Oldupload", async (req, res) => {
-  try {
-    // app.post('/upload', upload.single('uploadImage'), (req, res) => {
-    const name = await req.body.username;
-    // const image = req.file.buffer;
-    // console.log(image);
-    console.log("name: ", name);
-    // res.contentType('image/jpeg').send(image.buffer);
-    // res.contentType('image/jpeg').send(image);
-    res.send("THanks");
-    // console.log("Image", image)
-    // console.log("Image Path: ", image.path);
-  } catch (error) {
-    console.log("🚀 ~ file: index.js:57 ~ error:", error);
-  }
-});
+app.use("/api", Auth);
+
+app.get("/api/home", (req, res,) => {
+  res.send("Home Page with Default Auth")
+})
+
+app.get("/api/dashboard", (req, res,) => {
+  res.send("Dashboard Page with Auth")
+})
 
 app.listen(3003, () => {
   console.log("App is listening on port 3003...");
